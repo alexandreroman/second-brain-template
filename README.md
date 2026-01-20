@@ -16,6 +16,8 @@ This project is a fully automated "Second Brain" (Personal Knowledge Management)
 
 The goal of this project is to automatically collect, process, summarize, and organize information from various sources (web articles, YouTube videos, etc.) to create a structured and actionable knowledge base in [Obsidian](https://obsidian.md).
 
+https://github.com/user-attachments/assets/670f1552-54b8-41e2-bb0f-be584bf72fa9
+
 ## Usage
 
 To start adding content to your Second Brain, simply interact with Antigravity:
