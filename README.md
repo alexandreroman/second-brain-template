@@ -2,6 +2,8 @@
 
 This project is a fully automated "Second Brain" (Personal Knowledge Management) system driven by AI agents.
 
+![Obsidian](second-brain-obsidian.png)
+
 ## Requirements
 
 *   **Google Antigravity**: This system is specifically architected to run with [Google Antigravity](https://antigravity.google). The agent leverages the custom skills defined in `.agent/skills/` to execute complex workflows autonomously.
