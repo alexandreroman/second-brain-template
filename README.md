@@ -9,8 +9,9 @@ This project is a fully automated "Second Brain" (Personal Knowledge Management)
 *   **Google Antigravity**: This system is specifically architected to run with [Google Antigravity](https://antigravity.google). The agent leverages the custom skills defined in `.agent/skills/` to execute complex workflows autonomously.
 *   **External Tools**: The following tools must be installed on your system:
     *   **Git**: Required for version control and committing changes. Download from [git-scm.com](https://git-scm.com/downloads) or install via package manager (e.g., `winget install Git.Git` on Windows).
+    *   **Python**: Version 3.10 or higher is required to run the skills' scripts. Download from [python.org](https://www.python.org/downloads/) or install via package manager.
 *   **Environment Variables**: You must define the `GEMINI_API_KEY` environment variable for the agents to function correctly. This key authorizes the underlying models used by the skills.
-*   **User Profile**: You must initialize your profile by running the `/init` command before anything else. This information is stored in English in `.agent/skills/about-me/resources/profile.txt` and is used by the agent to personalize reviews and content processing.
+*   **User Profile**: You must initialize your profile by running the `/init` command before anything else. This information is stored in English in `.agent/skills/about-me/resources/profile.md` and is used by the agent to personalize reviews and content processing.
 
 ## Objective
 
@@ -38,7 +39,7 @@ The system relies on a collection of "skills" located in the `.agent/skills/` di
 
 *   **Init** (`.agent/skills/init`): Initializes the user profile by asking a series of questions about professional background, interests, and preferences.
 *   **Process** (`.agent/skills/process`): The main entry point. It takes a URL (or reads from `backlog.txt`), cleans the link, and orchestrates other skills to create a note.
-*   **Summarize** (`.agent/skills/summarize`): Analyzes content (text or video), generates a summary, extracts key points, and retrieves metadata (duration, specific thumbnails, etc.).
+*   **Summarize** (`.agent/skills/summarize`): Analyzes content (text or video), generates a summary, extracts key points, extracts relevant quotes, and retrieves metadata (duration, specific thumbnails, etc.).
 *   **Classify** (`.agent/skills/classify`): Automatically determines content type (article, video, tutorial...), appropriate tags, and the destination file path.
 *   **Review** (`.agent/skills/review`): Adds a personalized review to the note based on the user's professional profile.
 *   **Refine** (`.agent/skills/refine`): Allows updating or improving an existing note based on specific feedback.
