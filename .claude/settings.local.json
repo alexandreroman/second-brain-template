@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "Skill(process)",
+      "Skill(setup)",
+      "Skill(reset)",
+      "Skill(feature)",
+      "Bash(test:*)",
+      "Bash(echo:*)"
+    ]
+  }
+}

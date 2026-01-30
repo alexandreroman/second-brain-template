@@ -1,5 +1,0 @@
-google-genai
-python-dotenv
-youtube-transcript-api==1.2.3
-cloudscraper
-beautifulsoup4

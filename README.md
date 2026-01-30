@@ -1,4 +1,4 @@
-# 🧠 My Second Brain powered by AI ✨
+# My Second Brain powered by AI
 
 This project is a fully automated "Second Brain" (Personal Knowledge Management) system driven by AI agents.
 
@@ -6,12 +6,15 @@ This project is a fully automated "Second Brain" (Personal Knowledge Management)
 
 ## Requirements
 
-*   **Google Antigravity**: This system is specifically architected to run with [Google Antigravity](https://antigravity.google). The agent leverages the custom skills defined in `.agent/skills/` to execute complex workflows autonomously.
+*   **AI Agent**: This system uses the [Agent Skills](https://agentskills.io) open format. It is compatible with any agent that supports this standard, including [Claude Code](https://claude.ai/code), [Gemini CLI](https://geminicli.com), [Cursor](https://cursor.com), and others.
 *   **External Tools**: The following tools must be installed on your system:
-    *   **Git**: Required for version control and committing changes. Download from [git-scm.com](https://git-scm.com/downloads) or install via package manager (e.g., `winget install Git.Git` on Windows).
     *   **Python**: Version 3.10 or higher is required to run the skills' scripts. Download from [python.org](https://www.python.org/downloads/) or install via package manager.
-*   **Environment Variables**: You must define the `GEMINI_API_KEY` environment variable for the agents to function correctly. This key authorizes the underlying models used by the skills.
-*   **User Profile**: You must initialize your profile by running the `/init` command before anything else. This information is stored in English in `.agent/skills/about-me/resources/profile.md` and is used by the agent to personalize reviews and content processing.
+    *   **Git**: Required for version control and committing changes. Download from [git-scm.com](https://git-scm.com/downloads) or install via package manager (e.g., `winget install Git.Git` on Windows).
+*   **LLM Configuration**: Configure your LLM provider via environment variables in `.env`:
+    *   `LLM_PROVIDER`: Provider to use (`gemini` or `anthropic`). Default: `gemini`.
+    *   `LLM_MODEL`: Model identifier. Default depends on provider.
+    *   `LLM_API_KEY`: API key for the chosen provider.
+*   **User Profile**: You must initialize your profile by running the `/setup` command before anything else. This information is stored in `.profile.md` at the project root and is used by the agent to personalize reviews and content processing.
 
 ## Objective
 
@@ -21,68 +24,62 @@ https://github.com/user-attachments/assets/670f1552-54b8-41e2-bb0f-be584bf72fa9
 
 ## Usage
 
-To start adding content to your Second Brain, simply interact with Antigravity:
+To start adding content to your Second Brain, simply interact with your AI agent:
 
-*   **Init Command**: Run the slash command `/init` before starting anything else. This command will:
-    *   Verify that all required external tools (git) are installed.
+*   **Setup Command**: Run `/setup` before starting anything else. This command will:
+    *   Verify that all required external tools (python, git) are installed.
     *   Install all required Python dependencies for the skills' scripts.
     *   Set up your user profile through a series of questions.
-*   **Process Command**: Use the slash command `/process` followed by a URL (e.g., `/process https://example.com/article`) to immediately capture, summarize, and classify a resource.
+*   **Process Command**: Use `/process` followed by a URL (e.g., `/process https://example.com/article`) to immediately capture, summarize, and classify a resource.
 *   **Batch Processing**: Run `/process` without arguments to process all URLs currently queued in `backlog.txt`.
-*   **Reset Command**: Use the slash command `/reset` to reinitialize the project by deleting your user profile, all notes, and the Obsidian vault. This is useful when you want to start fresh. ⚠️ **Warning**: This operation is irreversible and requires explicit confirmation.
+*   **Reset Command**: Use `/reset` to reinitialize the project by deleting your user profile, all notes, and the Obsidian vault. This operation is irreversible and requires explicit confirmation.
 
 ## How It Works
 
-The system relies on a collection of "skills" located in the `.agent/skills/` directory. These skills are orchestrated to transform a simple URL into a rich, connected note.
+The system relies on a collection of skills located in the `.claude/skills/` directory, following the [Agent Skills](https://agentskills.io) specification. These skills are orchestrated to transform a simple URL into a rich, connected note.
 
 ### Key Skills
 
-*   **Init** (`.agent/skills/init`): Initializes the user profile by asking a series of questions about professional background, interests, and preferences.
-*   **Process** (`.agent/skills/process`): The main entry point. It takes a URL (or reads from `backlog.txt`), cleans the link, and orchestrates other skills to create a note.
-*   **Summarize** (`.agent/skills/summarize`): Analyzes content (text or video), generates a summary, extracts key points, extracts relevant quotes, and retrieves metadata (duration, specific thumbnails, etc.).
-*   **Classify** (`.agent/skills/classify`): Automatically determines content type (article, video, tutorial...), appropriate tags, and the destination file path.
-*   **Review** (`.agent/skills/review`): Adds a personalized review to the note based on the user's professional profile.
-*   **Refine** (`.agent/skills/refine`): Allows updating or improving an existing note based on specific feedback.
-*   **Format** (`.agent/skills/format`): Standardizes the layout and typography of nodes for consistency.
-*   **Feature** (`.agent/skills/feature`): Allows marking specific notes as important or "featured".
-*   **Transform** (`.agent/skills/transform`): Prepares notes for the Obsidian vault. This includes handling internal links ("wikilinks"), formatting callouts, adding thumbnails, and setting final files to read-only to preserve generated data integrity.
-*   **Commit** (`.agent/skills/commit`): Automatically saves changes to the Git repository with a standardized message.
-*   **Reset** (`.agent/skills/reset`): Reinitializes the project by deleting the user profile, all notes, and the Obsidian vault. This is a destructive operation that requires explicit confirmation.
+*   **Process** (`process`): The main entry point. Takes a URL (or reads from `backlog.txt`), extracts content, summarizes, classifies, reviews, formats, transforms for Obsidian, and commits the note. This skill contains the full pipeline and all associated scripts.
+*   **Setup** (`setup`): Initializes the user profile by asking a series of questions about professional background, interests, and preferences.
+*   **Feature** (`feature`): Marks specific notes as important or "featured".
+*   **Reset** (`reset`): Reinitializes the project by deleting the user profile, all notes, and the Obsidian vault.
+*   **Content Standards** (`content-standards`): Enforces encoding, language, and typography rules for all generated content.
+*   **Execution Standards** (`execution-standards`): Enforces cross-platform portability and safe execution conventions.
 
 ## Typical Workflow
 
 ```mermaid
 graph TD
-    Input[Input URL / backlog.txt] --> Process(Process Skill)
-    Process --> Summarize(Summarize Skill)
-    Summarize -- Content, Summary, Metadata --> Classify(Classify Skill)
-    Classify -- Type, Tags, Path --> CreateNote[Create Source Note in notes/]
-    CreateNote --> Review(Review Skill)
-    Review -- Add Personal Opinion --> UpdateNote[Update Source Note with Review]
-    UpdateNote --> Format(Format Skill)
-    Format -- Standardize Layout --> FormattedNote[Formatted Source Note]
-    FormattedNote --> Transform(Transform Skill)
-    Transform -- Wikilinks, Thumbnails --> Vault[Final Note in obsidian/vault/]
-    Vault --> Commit(Commit Skill)
-    UserFeedback[User Feedback] -.-> Refine(Refine Skill)
-    Refine -.-> UpdateNote
-    Commit -- Save Changes --> Git[Git Repository]
+    Input[Input URL / backlog.txt] --> Extract[Extract Content]
+    Extract --> Summarize[Summarize via LLM]
+    Summarize --> Classify[Classify via LLM]
+    Classify --> Assemble[Assemble Note in notes/]
+    Assemble --> Review[Review via LLM]
+    Review --> Format[Format Note]
+    Format --> Transform[Transform for Obsidian]
+    Transform --> Vault[Final Note in obsidian/vault/]
+    Vault --> Commit[Git Commit]
 ```
 
 1.  **Input**: A URL is provided to the system (via `/process` command or `backlog.txt`).
-2.  **Processing**: The agent retrieves content, generates a structured summary, and classifies the resource.
-3.  **Creation**: A source Markdown note is created in the `notes/` directory (organized by type and date, e.g., `notes/article/2026/01/...`).
-4.  **Enrichment**: The note is enriched with a personalized review and other metadata.
-5.  **Standardization**: The note layout is automatically adjusted via the **Format skill** to ensure consistent spacing and style.
-6.  **Transformation**: The note is transformed and copied to `obsidian/vault/` for consumption in the Obsidian application.
-7.  **Persistence**: The changes are automatically committed to the Git repository.
+2.  **Extraction**: The content is extracted from the URL (web page or YouTube video).
+3.  **Summarization**: An LLM generates a structured summary with key points and quotes.
+4.  **Classification**: An LLM classifies the content by type and tags.
+5.  **Assembly**: A source Markdown note is created in `notes/` (organized by type and date).
+6.  **Review**: The note is enriched with a personalized review based on the user profile.
+7.  **Formatting**: The note layout is standardized for consistent spacing and style.
+8.  **Transformation**: The note is copied to `obsidian/vault/` with wikilinks and thumbnails.
+9.  **Persistence**: The changes are committed to the Git repository.
 
 ## Directory Structure
 
-*   `.agent/skills/`: Python scripts and AI skill definitions.
+*   `.claude/skills/`: Agent Skills definitions, scripts, and resources.
 *   `notes/`: Source storage for generated notes (working format).
 *   `obsidian/vault/`: Final directory intended to be opened with Obsidian (optimized generated files).
 *   `backlog.txt`: Queue of URLs for batch processing.
+*   `.profile.md`: User profile (generated by the `setup` skill).
+*   `.env`: LLM provider configuration.
 
 ## License
 
